@@ -1,8 +1,13 @@
 # skyward
 
-Personal Python client + MCP server for Skyward Family Access at Jordan School
-District (`skystu.jordan.k12.ut.us`). Pulls classes, term grades, and per-class
-assignments. Built for one student; not generalized across districts.
+Python client + MCP server + Claude skill for [Skyward Family Access][skyward].
+Pulls classes, term grades, and per-class assignment breakdowns.
+
+Default target is Jordan SD (`skystu.jordan.k12.ut.us`); base URL is an env
+var so it can point at any Skyward district. Personal project — not affiliated
+with Skyward or any school district.
+
+[skyward]: https://www.skyward.com/family-access
 
 ## Layout
 
@@ -22,19 +27,20 @@ tests/               pytest, hand-built fixtures (no real student data committed
 
 ## Setup (one-time)
 
-Add the following to `~/.zshrc`:
+Add the following to `~/.zshrc` (or `~/.bashrc`):
 
 ```sh
-export SKYWARD_USERNAME="furrchr000"
+export SKYWARD_USERNAME="<your-skyward-username>"
 export SKYWARD_PASSWORD="<your-skyward-password>"
 export SKYWARD_BASE_URL="https://skystu.jordan.k12.ut.us/scripts/wsisa.dll/WService=wsEAplus"
 ```
 
-(I tried to do this for you but the security guard declined writing to
-`~/.zshrc`. The password is the one you shared — also rotate it if you want,
-since it briefly lived in a conversation transcript.)
-
 Then reload: `source ~/.zshrc`.
+
+For another Skyward district, change `SKYWARD_BASE_URL` to that district's
+`WService=...` base path. The login flow is the same across all districts
+running the standard Skyward Family Access skin; the gradebook parser is
+keyed off CSS conventions Skyward uses everywhere.
 
 ## Using it
 

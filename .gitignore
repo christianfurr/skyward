@@ -19,6 +19,8 @@ wheels/
 !tests/fixtures/*.html
 scratch/
 .playwright-mcp/
+testing/
+/testing
 
 # Never commit secrets
 .env
