@@ -83,9 +83,80 @@ def skyward_summary() -> dict[str, Any]:
                 "teacher": c.teacher,
                 "term":    latest.term if latest else None,
                 "letter":  latest.letter if latest else None,
+                "percent": latest.percent if latest else None,
             }
         )
     return {"classes": summary}
+
+
+@mcp.tool()
+def skyward_get_attendance() -> list[dict[str, Any]]:
+    """Fetch the user's attendance history.
+
+    Returns one entry per absence/tardy event, newest first, each with:
+    `day` (YYYY-MM-DD), `status` (e.g. "Unexcused Tardy", "Guardian-excused
+    Absence", "Check-in/out"), `period` (single period like "7" or a range
+    "3-4"), `class_name` (null when the absence spans multiple classes),
+    and `reason` (the parenthesized sub-reason if Skyward provided one,
+    e.g. "Check-out" or "Counselor meeting").
+    """
+    try:
+        days = _get().get_attendance()
+        return [d.model_dump(mode="json") for d in days]
+    except SkywardError as e:
+        return [{"error": str(e)}]
+
+
+@mcp.tool()
+def skyward_get_schedule() -> list[dict[str, Any]]:
+    """Fetch the user's current class schedule, sorted by period.
+
+    Returns one entry per class with `period`, `class_name`, `teacher`,
+    `room`, and `days` (the A/B day pattern). Classes that meet across
+    multiple terms are deduplicated.
+    """
+    try:
+        entries = _get().get_schedule()
+        return [e.model_dump(mode="json") for e in entries]
+    except SkywardError as e:
+        return [{"error": str(e)}]
+
+
+@mcp.tool()
+def skyward_get_gpa(school_year: int | None = None) -> dict[str, Any]:
+    """Fetch the user's cumulative GPA (and optionally a per-term breakdown).
+
+    Pulled from the gradebook's GPA dialog. The `rows` field has one entry per
+    GPA type Skyward exposes (typically just "Normal", but districts can add
+    "Weighted"); each row carries `cumulative_gpa`, `earned_credits`, and
+    `failed_credits`.
+
+    Pass `school_year` (e.g. 2026 for the 2025-2026 year) to also populate
+    `term_breakdown` — one row per quarter with the per-term GPA. Skipping the
+    arg returns only the cumulative rows.
+    """
+    try:
+        gpa = _get().get_gpa(school_year=school_year)
+        return gpa.model_dump(mode="json")
+    except SkywardError as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def skyward_get_messages() -> list[dict[str, Any]]:
+    """Fetch the recent messages from the Skyward home-page feed.
+
+    Returns one entry per message with `subject`, `sender` (teacher name +
+    class for class messages; null for system messages like food service
+    payments), `sent_at` (ISO timestamp), and `unread` (true if Skyward
+    still marks the message as unread). Bodies aren't included — Skyward
+    lazy-loads them and they're not in the static page.
+    """
+    try:
+        msgs = _get().get_messages()
+        return [m.model_dump(mode="json") for m in msgs]
+    except SkywardError as e:
+        return [{"error": str(e)}]
 
 
 def main() -> None:

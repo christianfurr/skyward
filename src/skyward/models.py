@@ -38,6 +38,7 @@ class AttendanceDay(BaseModel):
     day: date
     status: str
     period: str | None = None
+    class_name: str | None = None
     reason: str | None = None
 
 
@@ -57,7 +58,23 @@ class Message(BaseModel):
     unread: bool = False
 
 
+class GpaRow(BaseModel):
+    gpa_type: str = Field(description="Skyward GPA type label (e.g. 'Normal', 'Weighted')")
+    cumulative_gpa: float | None = None
+    earned_credits: float | None = None
+    failed_credits: float | None = None
+
+
+class GpaTermRow(BaseModel):
+    label: str = Field(description="Term label as Skyward renders it (e.g. 'Term 1 (Normal)')")
+    gpa: float | None = None
+
+
 class GpaSummary(BaseModel):
-    unweighted: float | None = None
-    weighted: float | None = None
-    as_of: date | None = None
+    rows: list[GpaRow] = Field(default_factory=list, description="Cumulative GPA by type")
+    term_breakdown: list[GpaTermRow] = Field(
+        default_factory=list, description="Per-term GPA for the current school year, if requested"
+    )
+    school_year: int | None = Field(
+        default=None, description="School year for the term breakdown, e.g. 2026"
+    )

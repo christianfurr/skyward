@@ -19,6 +19,7 @@ from ..models import Assignment
 _CDATA_OUTPUT = re.compile(r"<output><!\[CDATA\[(.*?)\]\]></output>", re.DOTALL)
 _POINTS = re.compile(r"^\s*([\d.]+)\s+out of\s+([\d.]+)\s*$", re.IGNORECASE)
 _ASSIGNMENT_GRID = re.compile(r"^grid_stuAssignmentSummaryGrid_")
+_TERM_SUMMARY_GRID = re.compile(r"^grid_stuTermSummaryGrid_")
 _DATE = re.compile(r"^\d{2}/\d{2}/\d{2,4}$")
 
 
@@ -42,6 +43,31 @@ def _maybe_float(text: str) -> float | None:
         return float(text)
     except ValueError:
         return None
+
+
+def parse_term_summary(xml: str) -> tuple[str | None, float | None]:
+    """Pull the (letter, percent) out of the Term Summary grid in the popup.
+
+    The first data row of `grid_stuTermSummaryGrid_*` has two cells: a letter
+    cell (e.g. `C+`) and a numeric percent cell (e.g. `78.65`). Returns
+    `(None, None)` if Skyward shipped the grid without a numeric column.
+    """
+    m = _CDATA_OUTPUT.search(xml)
+    inner = m.group(1) if m else xml
+    soup = BeautifulSoup(inner, "lxml")
+    grid = soup.find("table", id=_TERM_SUMMARY_GRID)
+    if grid is None:
+        return None, None
+    body = grid.find("tbody") or grid
+    row = body.find("tr")
+    if row is None:
+        return None, None
+    cells = row.find_all("td", recursive=False)
+    if not cells:
+        return None, None
+    letter = cells[0].get_text(" ", strip=True) or None
+    percent = _maybe_float(cells[-1].get_text(" ", strip=True)) if len(cells) > 1 else None
+    return letter, percent
 
 
 def parse_assignments(xml: str) -> list[Assignment]:

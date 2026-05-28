@@ -7,9 +7,13 @@ import time
 
 from .auth import SkywardSession, login
 from .exceptions import AuthError, NotLoggedIn, ScrapeError
-from .models import Assignment, Class
-from .parsers.assignments import parse_assignments
+from .models import Assignment, AttendanceDay, Class, GpaSummary, Message, ScheduleEntry
+from .parsers.assignments import parse_assignments, parse_term_summary
+from .parsers.attendance import parse_attendance
+from .parsers.gpa import parse_gpa_details, parse_gpa_rank
 from .parsers.gradebook import parse_gradebook
+from .parsers.messages import parse_messages
+from .parsers.schedule import parse_schedule
 
 DEFAULT_BASE_URL = "https://skystu.jordan.k12.ut.us/scripts/wsisa.dll/WService=wsEAplus"
 
@@ -140,7 +144,75 @@ class SkywardClient:
                 "requestId":              str(int(time.time() * 1000)),
             },
         )
+        # While we have the popup, opportunistically backfill the numeric
+        # percent on the cached term grade. The gradebook landing page only
+        # ships the letter, so this is the cheapest way to get the percent.
+        _letter, percent = parse_term_summary(xml)
+        if percent is not None and grade.percent is None:
+            grade.percent = percent
+
         return parse_assignments(xml)
+
+    def get_attendance(self) -> list[AttendanceDay]:
+        html = self._post("sfattendance001.w")
+        return parse_attendance(html)
+
+    def get_schedule(self) -> list[ScheduleEntry]:
+        html = self._post("sfschedule001.w")
+        return parse_schedule(html)
+
+    def get_messages(self) -> list[Message]:
+        html = self._post("sfhome01.w")
+        return parse_messages(html)
+
+    def get_gpa(self, *, school_year: int | None = None) -> GpaSummary:
+        """Fetch cumulative GPA + (optionally) the per-term breakdown for a year.
+
+        The cumulative call returns one row per GPA type (Normal, Weighted,
+        ...). If `school_year` is given (e.g. 2026 for the 2025-2026 year), a
+        second call fills in the per-term breakdown.
+        """
+        sess = self._ensure_session()
+        # An entity_id is needed; pick the first one we know about from the
+        # gradebook. Falls back to the Skyward default ("710" for Riverton)
+        # only if no classes are cached yet — almost never the case in
+        # practice.
+        entity_id = next((c.entity_id for c in self.get_classes() if c.entity_id), None)
+        common = {
+            "stuId":                  sess.params.get("nameid", ""),
+            "entityId":               entity_id or "",
+            "ishttp":                 "true",
+            "javascript.filesAdded":  "jquery.1.8.2.js,qsfmain001.css,sfgradebook.css,qsfmain001.min.js,sfgradebook.js,sfprint001.js",
+        }
+
+        rank_xml = self._post(
+            "httploader.p?file=sfgradebook002.w",
+            referer="sfgradebook001.w",
+            xhr=True,
+            extra={
+                **common,
+                "action":    "viewGPARank",
+                "requestId": str(int(time.time() * 1000)),
+            },
+        )
+        rows = parse_gpa_rank(rank_xml)
+
+        summary = GpaSummary(rows=rows)
+        if school_year is not None:
+            details_xml = self._post(
+                "httploader.p?file=sfgradebook002.w",
+                referer="sfgradebook001.w",
+                xhr=True,
+                extra={
+                    **common,
+                    "action":     "viewGPADetails",
+                    "schoolyear": str(school_year),
+                    "requestId":  str(int(time.time() * 1000)),
+                },
+            )
+            summary.term_breakdown = parse_gpa_details(details_xml)
+            summary.school_year = school_year
+        return summary
 
 
 def _looks_expired(text: str) -> bool:

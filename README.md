@@ -52,6 +52,12 @@ Tools available:
 - `skyward_summary` — one-row-per-class snapshot of the latest grade.
 - `skyward_get_classes` — full per-term Q1..Q4 grid.
 - `skyward_get_assignments(class_name, term="Q4")` — assignment breakdown.
+  Side effect: backfills the numeric percent on the corresponding `TermGrade`.
+- `skyward_get_attendance` — absence / tardy / check-out history (date, status, period, class, reason).
+- `skyward_get_schedule` — current schedule (period, class, teacher, room, days).
+- `skyward_get_messages` — home-page message feed (sender, subject, date, unread).
+- `skyward_get_gpa(school_year=None)` — cumulative GPA + earned/failed credits;
+  pass a `school_year` (e.g. 2026) for the per-quarter breakdown.
 
 The `~/.claude/skills/skyward` skill teaches Claude when to reach for these.
 
@@ -59,6 +65,10 @@ The `~/.claude/skills/skyward` skill teaches Claude when to reach for these.
 
 ```sh
 uv run python -m skyward.debug classes
+uv run python -m skyward.debug attendance
+uv run python -m skyward.debug schedule
+uv run python -m skyward.debug messages
+uv run python -m skyward.debug gpa --year 2026
 uv run python -m skyward.debug assignments "LANG ARTS" --term Q4
 ```
 
@@ -101,18 +111,34 @@ If Skyward starts returning empty CDATA for assignment requests, check those
 fields and headers first — that's exactly the failure mode we already debugged
 in v0.
 
+## GPA (notes for future-me)
+
+GPA does *not* live on the Academic History page (that page is empty for this
+account). It comes from the gradebook's "Display Options → GPA" dialog, which
+fires two AJAX calls against `sfgradebook002.w`:
+
+- `action=viewGPARank` → cumulative GPA by type + earned/failed credits.
+  Response is `grid_CumulativeHistoricalGpaDialog<sid>_<eid>` with section
+  rows ("2025 - 2026 School Year") interleaved with data rows.
+- `action=viewGPADetails&schoolyear=<YYYY>` → per-term GPA for that school
+  year. Response is `grid_GpaDetailsDialog_<sid>_<eid>` with `Term N (Type)`
+  labels.
+
+Both calls use the standard XHR form body (`sessionid`, `encses`, `dwd`,
+`wfaacl`) plus `stuId=nameid` and `entityId`.
+
 ## Not yet wired up
 
-- Attendance (`sfattendance001.w`)
-- Schedule (`sfschedule001.w`)
-- Messages (the home page side panel + `sfmainhttp001.w?action=allEmailHistory`)
-- Report card / academic history (`sfacademichistory001.w`)
-- GPA (probably from academic history)
-- Numeric percent for term grades (gradebook page only ships the letter; the
-  percent appears on the assignment popup's Term Summary grid)
-
-Each follows the same scrape pattern; the auth and request scaffolding are
-already in place.
+- Full Academic History across school years. `sfacademichistory001.w` returns
+  "Academic History is not available for CHRISTIAN" for this account and the
+  `grid_gradeGrid_*` blocks load via AJAX we haven't reverse-engineered.
+- Report card PDFs. `sfreportcards001.w` and `sfportfolio.w` were probed and
+  returned "Unable to find the web object file specified" for this account.
+- Full email message bodies. The home-page feed parser gives metadata only;
+  Skyward lazy-loads bodies into `span#messageText_*`. The
+  `sfmainhttp001.w?action=allEmailHistory` action returns the full dialog
+  HTML but needs the right XHR headers — same pattern as the assignment
+  popup, just unbuilt.
 
 ## Running tests
 

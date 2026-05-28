@@ -4,7 +4,9 @@ from .models import (
     Assignment,
     AttendanceDay,
     Class,
+    GpaRow,
     GpaSummary,
+    GpaTermRow,
     Message,
     ScheduleEntry,
     TermGrade,
@@ -22,5 +24,7 @@ __all__ = [
     "AttendanceDay",
     "ScheduleEntry",
     "Message",
+    "GpaRow",
+    "GpaTermRow",
     "GpaSummary",
 ]
