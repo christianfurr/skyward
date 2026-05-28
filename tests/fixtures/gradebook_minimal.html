@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><title>Student Access Gradebook</title></head><body>
+<div id='grid_stuGradesGrid_999999_710_gridWrap'>
+<div class='sf_gridTableWrap'>
+<table id='classDesc_999999_111111_0_02'>
+  <tr>
+    <td class='vAt' rowspan='3'></td>
+    <td><span class='bld classDesc'><a>BIOLOGY</a></span></td>
+  </tr>
+  <tr><td><label>Period</label> 2 <span>(9:12 AM - 10:40 AM)</span></td></tr>
+  <tr><td><a>TEACHER, ONE</a></td></tr>
+</table>
+<table id='classDesc_999999_222222_0_03'>
+  <tr>
+    <td class='vAt' rowspan='3'></td>
+    <td><span class='bld classDesc'><a>LANG ARTS</a></span></td>
+  </tr>
+  <tr><td><label>Period</label> 3B <span>(10:46 AM - 12:14 PM)</span></td></tr>
+  <tr><td><a>TEACHER, TWO</a></td></tr>
+</table>
+</div>
+</div>
+
+<!-- Skyward ships grade cells inside JSON in a script tag. The grid is
+     populated client-side. We mimic that here so the parser exercises the
+     same regex path it uses against the live page. -->
+<script type='text/javascript'>
+var rows = [
+{"h":"<td  class='pB bld'><div class='gW_999999_710_all'><a id='showGradeInfo' name='showGradeInfo' data-sId='999999' data-eId='710' data-cNI='111111' data-trk='0' data-sec='02' data-gId='1111111' data-bkt='TERM 1' data-lit='Q1' data-isEoc='no' href=\"javascript:void(0)\" >A<\/a><\/div><\/td>"},
+{"h":"<td  class='pB bld'><div class='gW_999999_710_all'><a id='showGradeInfo' name='showGradeInfo' data-sId='999999' data-eId='710' data-cNI='111111' data-trk='0' data-sec='02' data-gId='1111111' data-bkt='TERM 2' data-lit='Q2' data-isEoc='no' href=\"javascript:void(0)\" >B+<\/a><\/div><\/td>"},
+{"h":"<td  class='pB bld'><div class='gW_999999_710_all'><a id='showGradeInfo' name='showGradeInfo' data-sId='999999' data-eId='710' data-cNI='222222' data-trk='0' data-sec='03' data-gId='2222222' data-bkt='TERM 1' data-lit='Q1' data-isEoc='no' href=\"javascript:void(0)\" >C<\/a><\/div><\/td>"},
+{"h":"<td  class='pB bld'><div class='gW_999999_710_all'><a id='showGradeInfo' name='showGradeInfo' data-sId='999999' data-eId='710' data-cNI='222222' data-trk='0' data-sec='03' data-gId='2222222' data-bkt='TERM 2' data-lit='Q2' data-isEoc='no' href=\"javascript:void(0)\" ><\/a><\/div><\/td>"}
+];
+</script>
+</body></html>

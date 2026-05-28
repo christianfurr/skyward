@@ -1,0 +1,27 @@
+[project]
+name = "skyward"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Christian Furr", email = "furr.christian@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "httpx>=0.28.1",
+    "lxml>=6.1.1",
+    "mcp[cli]>=1.27.1",
+    "pydantic>=2.13.4",
+    "python-dateutil>=2.9.0.post0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.3,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "ruff>=0.15.14",
+]

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<response>
+<output><![CDATA[
+<div id="grid_stuGradeInfoGrid_999999_222222_0_03_gridWrap" class="gridWrap">
+<div class="sf_gridTableWrap">
+<table id="grid_stuAssignmentSummaryGrid_999999_222222_0_03_4">
+<thead><tr><th>Due</th><th>Assignment</th><th>Grade</th><th>Score (%)</th><th>Points Earned</th><th>Missing</th><th>No Count</th><th>Absent</th></tr></thead>
+<tbody>
+  <tr><td></td><td>Assignment weighted at 50.00%</td><td>C+</td><td>77.61</td><td>52 out of 67</td><td></td></tr>
+  <tr><td>05/17/26</td><td>Essay Final</td><td>A</td><td>100.00</td><td>20 out of 20</td><td></td><td></td><td></td></tr>
+  <tr><td>05/13/26</td><td>Missing Worksheet</td><td>F</td><td>0.00</td><td>0 out of 15</td><td>X</td><td></td><td></td></tr>
+  <tr><td></td><td>Test weighted at 50.00%</td><td>B</td><td>85.00</td><td>17 out of 20</td><td></td></tr>
+  <tr><td>05/01/26</td><td>Midterm</td><td>B</td><td>85.00</td><td>17 out of 20</td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+</div></div>
+]]></output>
+<data><![CDATA[]]></data>
+<sff><![CDATA[]]></sff>
+</response>
