@@ -1,0 +1,14 @@
+{
+  "name": "skyward",
+  "displayName": "Skyward Family Access",
+  "description": "Routes Skyward Family Access questions (grades, assignments, attendance, schedule, messages) through the local Skyward MCP server.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Christian Furr",
+    "url": "https://github.com/christianfurr"
+  },
+  "homepage": "https://github.com/christianfurr/skyward",
+  "repository": "https://github.com/christianfurr/skyward",
+  "keywords": ["skyward", "family-access", "school", "grades", "mcp"],
+  "skills": ["./skill"]
+}
