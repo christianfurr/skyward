@@ -36,6 +36,17 @@ def test_handles_empty_letter_as_none(minimal_html: str) -> None:
     assert grades["Q2"] is None
 
 
+def test_maps_grade_cell_with_alternate_course_number(minimal_html: str) -> None:
+    html = minimal_html.replace(
+        "data-cNI='111111' data-trk='0' data-sec='02'",
+        "data-cNI='999999' data-trk='0' data-sec='02'",
+    )
+    classes = parse_gradebook(html)
+    bio = next(c for c in classes if c.class_id == "111111")
+    assert bio.gradebook_class_id == "999999"
+    assert [(g.term, g.letter) for g in bio.grades] == [("Q1", "A"), ("Q2", "B+")]
+
+
 def test_raises_on_html_without_classes() -> None:
     with pytest.raises(ScrapeError):
         parse_gradebook("<html><body>nope</body></html>")

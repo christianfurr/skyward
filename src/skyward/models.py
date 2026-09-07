@@ -12,7 +12,11 @@ class TermGrade(BaseModel):
 
 
 class Class(BaseModel):
-    class_id: str = Field(description="Skyward internal course identifier (corNumId)")
+    class_id: str = Field(description="Skyward course identifier from the visible class row")
+    gradebook_class_id: str | None = Field(
+        default=None,
+        description="Alternate gradebook course identifier used by assignment popups",
+    )
     name: str
     period: str | None = None
     teacher: str | None = None

@@ -131,7 +131,7 @@ class SkywardClient:
                 "fromHttp":               "yes",
                 "stuId":                  sess.params.get("nameid", ""),
                 "entityId":               cls.entity_id or "",
-                "corNumId":               cls.class_id,
+                "corNumId":               cls.gradebook_class_id or cls.class_id,
                 "track":                  cls.track or "0",
                 "section":                cls.section or "",
                 "gbId":                   grade.gb_id,

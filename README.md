@@ -109,7 +109,9 @@ For AJAX endpoints (`httploader.p?file=...`) the request also needs:
 - `entityId` from `data-eId` on the gradebook grade cells (school-wide, 710 for
   Riverton High)
 - the per-grade `corNumId`, `track`, `section`, `gbId`, `bucket` (all available
-  via the gradebook parser)
+  via the gradebook parser). On some online/KPHS classes, the visible class row
+  and grade cell use different course numbers; the parser exposes the latter as
+  `gradebook_class_id` for assignment popups.
 
 If Skyward starts returning empty CDATA for assignment requests, check those
 fields and headers first — that's exactly the failure mode we already debugged

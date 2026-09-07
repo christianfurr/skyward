@@ -50,12 +50,13 @@ def parse_gradebook(html: str) -> list[Class]:
     soup = BeautifulSoup(html, "lxml")
 
     classes: dict[str, Class] = {}
+    class_aliases: dict[tuple[str, str], list[Class]] = {}
 
     for table in soup.find_all("table", id=_CLASS_TABLE_ID):
         m = _CLASS_TABLE_ID.match(table["id"])
         if not m:
             continue
-        _sid, cni, _period_code = m.groups()
+        sid, cni, section_code = m.groups()
         if cni in classes:
             continue
 
@@ -77,7 +78,9 @@ def parse_gradebook(html: str) -> list[Class]:
         if len(rows) > 2:
             teacher = _text(rows[2]) or None
 
-        classes[cni] = Class(class_id=cni, name=name, period=period, teacher=teacher)
+        cls = Class(class_id=cni, name=name, period=period, teacher=teacher)
+        classes[cni] = cls
+        class_aliases.setdefault((sid, section_code), []).append(cls)
 
     if not classes:
         raise ScrapeError("No classDesc_* tables found on gradebook page", snippet=html[:300])
@@ -86,6 +89,13 @@ def parse_gradebook(html: str) -> list[Class]:
     for m in _GRADE_CELL.finditer(html):
         cni = m["cni"]
         cls = classes.get(cni)
+        if cls is None:
+            # Some Skyward installations use a separate course number in the
+            # grade cell than in the visible classDesc table. The stable
+            # school/section pair still links the two records.
+            aliases = class_aliases.get((m["sid"], m["sec"]), [])
+            if len(aliases) == 1:
+                cls = aliases[0]
         if cls is None:
             continue
         bkt = m["bkt"]
@@ -100,6 +110,8 @@ def parse_gradebook(html: str) -> list[Class]:
             cls.section = m["sec"]
         if cls.entity_id is None:
             cls.entity_id = m["eid"]
+        if cls.gradebook_class_id is None:
+            cls.gradebook_class_id = cni
 
         letter_raw = html_mod.unescape(m["letter"]).strip()
         cls.grades.append(
