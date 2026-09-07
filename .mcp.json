@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "skyward": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}",
+        "run",
+        "python",
+        "-m",
+        "skyward.mcp_server"
+      ],
+      "env": {
+        "SKYWARD_USERNAME": "${SKYWARD_USERNAME}",
+        "SKYWARD_PASSWORD": "${SKYWARD_PASSWORD}",
+        "SKYWARD_BASE_URL": "${SKYWARD_BASE_URL}"
+      }
+    }
+  }
+}

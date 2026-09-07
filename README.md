@@ -46,7 +46,11 @@ keyed off CSS conventions Skyward uses everywhere.
 
 ### From Claude Code / Claude Desktop (MCP)
 
-Already registered (`claude mcp list` should show `skyward ✓ Connected`).
+The plugin package includes the MCP declaration. On a local Claude/Codex
+desktop install, the server starts from the installed plugin root and reads
+`SKYWARD_USERNAME`, `SKYWARD_PASSWORD`, and `SKYWARD_BASE_URL` from the
+environment. An existing explicit registration such as `claude mcp list`
+should also show `skyward ✓ Connected`.
 Tools available:
 
 - `skyward_summary` — one-row-per-class snapshot of the latest grade.

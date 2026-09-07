@@ -10,6 +10,7 @@
   "repository": "https://github.com/christianfurr/skyward",
   "keywords": ["skyward", "family-access", "school", "grades", "mcp"],
   "skills": ["./skill"],
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Skyward Family Access",
     "shortDescription": "Check grades, assignments, and attendance",

@@ -10,5 +10,6 @@
   "homepage": "https://github.com/christianfurr/skyward",
   "repository": "https://github.com/christianfurr/skyward",
   "keywords": ["skyward", "family-access", "school", "grades", "mcp"],
-  "skills": ["./skill"]
+  "skills": ["./skill"],
+  "mcpServers": "./.mcp.json"
 }
