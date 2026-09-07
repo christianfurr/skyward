@@ -1,0 +1,24 @@
+{
+  "name": "skyward",
+  "version": "1.0.0",
+  "description": "Routes Skyward Family Access questions (grades, assignments, attendance, schedule, messages) through the local Skyward MCP server.",
+  "author": {
+    "name": "Christian Furr",
+    "url": "https://github.com/christianfurr"
+  },
+  "homepage": "https://github.com/christianfurr/skyward",
+  "repository": "https://github.com/christianfurr/skyward",
+  "keywords": ["skyward", "family-access", "school", "grades", "mcp"],
+  "skills": ["./skill"],
+  "interface": {
+    "displayName": "Skyward Family Access",
+    "shortDescription": "Check grades, assignments, and attendance",
+    "longDescription": "Answer Skyward Family Access questions about grades, assignments, attendance, schedules, teachers, and school messages through the configured Skyward tools.",
+    "developerName": "Christian Furr",
+    "category": "Education",
+    "capabilities": ["Read"],
+    "brandColor": "#245FD7",
+    "composerIcon": "./assets/plugin-icon.png",
+    "logo": "./assets/plugin-icon.png"
+  }
+}
