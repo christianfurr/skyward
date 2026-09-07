@@ -28,6 +28,25 @@ This user has a Python-based Skyward client + MCP server at `~/Code/skyward/`. W
 - Attendance status strings look like `Unexcused Tardy`, `Guardian-excused Absence`, `Check-in/out`. A parenthesized sub-reason (e.g. `(Check-out)`, `(Counselor meeting)`) is split out into the `reason` field.
 - A `class_name: null` on an attendance row means the absence spanned multiple periods (Skyward shows "View Classes" instead of a specific class).
 
+## KPHS (online) classes — exclude from grade reporting
+
+Classes prefixed `KPHS/` (Kings Peak High School, the district's online school) are
+enrollment placeholders in this Skyward entity. They carry **no gradebook**:
+`grades: []`, and `entity_id`, `section`, `track`, `gb_id` are all `null`.
+`skyward_get_assignments` on one returns `No graded term ... Available terms: `.
+
+- **Omit them from grade tables and "how am I doing" answers.** Do not list them with a
+  blank/em-dash grade as if a grade were pending — there is nothing to pull, ever.
+- Their teacher field is garbage and must not be reported:
+  - `skyward_get_classes` / `skyward_summary` return `LAURA ADAMS` (note the `First Last`
+    format vs `LAST, FIRST` for real classes) — the KPHS coordinator, not the instructor.
+  - `skyward_get_schedule` returns the *course name* in the `teacher` column
+    (`WEB DEVELOPMENT 1`, `V FINANCIAL LITERACY`) — a column-shift artifact.
+- Real grades for these live in the KPHS system, not Skyward. If asked, say so rather than
+  reporting a blank.
+- They may still appear in schedule/period listings (periods 27 and 32) — that's fine;
+  the exclusion is about grades and teachers only.
+
 ## When NOT to use this skill
 
 - Other districts' Skyward instances (this client is configured for Jordan SD only).
